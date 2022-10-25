@@ -1,0 +1,41 @@
+Database:
+User
+- email
+- password
+- role
+- foreign: Student, Lecturer, Admin
+
+Student
+- name
+- birthday
+- birth_place
+- address
+- gender
+- phone
+- foreign: Major
+
+Lecturer
+- name
+- birthday
+- birth_place
+- address
+- gender
+- phone
+
+Major
+- name
+
+Subject
+- name
+- sks
+- foreign: Lecturer
+
+Schedule
+- date
+- room
+- foreign: Subject
+
+StudentSubject
+- foreign: student
+- foreign: subject
+- grade
