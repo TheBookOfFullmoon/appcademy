@@ -3,7 +3,7 @@ User
 - email
 - password
 - role
-- foreign: Student, Lecturer, Admin
+
 
 Student
 - name
@@ -13,6 +13,7 @@ Student
 - gender
 - phone
 - foreign: Major
+- foreign: User
 
 Lecturer
 - name
@@ -21,6 +22,7 @@ Lecturer
 - address
 - gender
 - phone
+- foreign: User
 
 Major
 - name
@@ -31,7 +33,7 @@ Subject
 - foreign: Lecturer
 
 Schedule
-- date
+- day_name
 - room
 - foreign: Subject
 
