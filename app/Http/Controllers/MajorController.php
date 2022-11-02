@@ -20,7 +20,7 @@ class MajorController extends Controller
     public function store(StoreMajorRequest $request){
         Major::create($request->post());
 
-        return redirect()->route('majors.index')
+        return redirect()->route('admin.majors.index')
             ->with('success', 'Successfully created new major');
     }
 
@@ -31,14 +31,14 @@ class MajorController extends Controller
     public function update(UpdateMajorRequest $request, Major $major){
         $major->update($request->post());
 
-        return redirect()->route('majors.index')
+        return redirect()->route('admin.majors.index')
             ->with('success', 'Successfully updated major');
     }
 
     public function destroy(Major $major){
         $major->delete();
 
-        return redirect()->route('majors.index')
+        return redirect()->route('admin.majors.index')
             ->with('success', 'Successfully deleted major');
     }
 }
