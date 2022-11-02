@@ -23,10 +23,12 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::resource('lecturers', \App\Http\Controllers\LecturerController::class)->middleware('lecturer');
 
-Route::resource('students', \App\Http\Controllers\StudentController::class)->middleware('student');
+Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['show', 'create', 'store', 'destroy'])->middleware('student');
 
-Route::group(['prefix' => 'admin'], function(){
+Route::group(['prefix' => 'admin', 'as' => 'admin.'], function(){
    Route::resource('majors', \App\Http\Controllers\MajorController::class)->middleware('admin');
+
+   Route::resource('students', \App\Http\Controllers\StudentController::class)->middleware('admin');
 });
 
 

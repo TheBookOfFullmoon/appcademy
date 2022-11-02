@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('address');
             $table->string('gender');
             $table->string('phone');
-            $table->foreignId('major_id');
-            $table->foreignId('user_id');
+            $table->foreignId('major_id')->constrained();
+            $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });
     }
