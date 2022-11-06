@@ -22,7 +22,7 @@ class StudentMiddleware
         }
 
         if (Auth::user()->role == 'admin'){
-            return redirect()->route('students.index');
+            return redirect()->route('admin.students.index');
         }
 
         if (Auth::user()->role == 'lecturer'){
