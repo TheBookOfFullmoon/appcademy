@@ -8,13 +8,12 @@ use App\Http\Requests\UpdateStudentRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Student;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
 {
     public function index(){
-        if (Auth::user()->role = "admin"){
+        if (Auth::user()->role == "admin"){
             return "hai admin";
         }
 
