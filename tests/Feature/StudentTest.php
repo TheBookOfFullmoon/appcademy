@@ -73,19 +73,18 @@ class StudentTest extends TestCase
 
     public function test_add_new_student(){
         $user = User::factory()->create(['role' => 'admin']);
-
-        $userStudent = User::factory()->create(['role' => 'student']);
         $major = Major::factory()->create();
 
         $this->actingAs($user)->post('admin/students', [
             'name' => 'new student',
+            'email' => 'test@email.com',
             'birthday' => '2022-02-02',
             'birth_place' => 'earth',
             'address' => 'earth',
             'phone' => '1234',
             'gender' => 'man',
+            'role' => 'student',
             'major_id' => $major->id,
-            'user_id' => $userStudent->id,
         ])->assertStatus(302)->assertRedirect('admin/students')
             ->assertSessionHas('success', 'Successfully created new student');
 
@@ -101,7 +100,12 @@ class StudentTest extends TestCase
             'phone' => '1234',
             'gender' => 'man',
             'major_id' => $major->id,
-            'user_id' => $userStudent->id,
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'id' => $student->user->id,
+            'email' => 'test@email.com',
+            'role' => 'student',
         ]);
     }
 
@@ -151,11 +155,14 @@ class StudentTest extends TestCase
 
         $this->actingAs($user)->put("admin/students/{$student->id}",[
             'name' => 'update student',
+            'email' => 'update@email.com',
+            'password' => 'newpassword',
             'birthday' => '2022-02-02',
             'birth_place' => 'earth',
             'address' => 'earth',
             'phone' => '1234',
             'gender' => 'man',
+            'role' => 'student',
             'major_id' => $major->id,
         ])->assertStatus(302)->assertRedirect("admin/students")
         ->assertSessionHas('success', "Successfully updated student");
@@ -173,6 +180,13 @@ class StudentTest extends TestCase
             'gender' => 'man',
             'major_id' => $major->id,
         ]);
+
+
+        $this->assertDatabaseHas('users', [
+            'id' => $student->user->id,
+            'email' => 'update@email.com',
+            'role' => 'student'
+        ]);
     }
 
     public function test_destroy_student(){
@@ -187,12 +201,15 @@ class StudentTest extends TestCase
         ]);
 
         $this->assertDatabaseCount('students', 1);
+        $this->assertDatabaseCount('users', 2);
 
         $this->actingAs($user)->delete("admin/students/{$student->id}")
             ->assertStatus(302)->assertRedirect("admin/students")
             ->assertSessionHas('success', "Successfully deleted student");
 
+
         $this->assertDatabaseCount('students', 0);
+        $this->assertDatabaseCount('users', 1);
     }
 
     /**
