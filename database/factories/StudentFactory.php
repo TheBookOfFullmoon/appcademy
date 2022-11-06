@@ -23,8 +23,6 @@ class StudentFactory extends Factory
             'address' => fake()->address(),
             'gender' => 'male',
             'phone' => fake()->phoneNumber(),
-            'major_id' => 1,
-            'user_id' => 1
         ];
     }
 }
