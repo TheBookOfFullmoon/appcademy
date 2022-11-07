@@ -25,12 +25,14 @@ Route::resource('lecturers', \App\Http\Controllers\LecturerController::class)->e
 
 Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['show', 'create', 'store', 'destroy'])->middleware('student');
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.'], function(){
-   Route::resource('majors', \App\Http\Controllers\MajorController::class)->middleware('admin');
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function(){
+   Route::resource('majors', \App\Http\Controllers\MajorController::class);
 
-   Route::resource('students', \App\Http\Controllers\StudentController::class)->middleware('admin');
+   Route::resource('students', \App\Http\Controllers\StudentController::class);
 
-   Route::resource('lecturers', \App\Http\Controllers\LecturerController::class)->middleware('admin');
+   Route::resource('lecturers', \App\Http\Controllers\LecturerController::class);
+
+   Route::resource('subjects', \App\Http\Controllers\SubjectController::class);
 });
 
 
