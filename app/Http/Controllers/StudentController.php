@@ -69,7 +69,12 @@ class StudentController extends Controller
             'major_id' => $studentRequest->post('major_id'),
         ]);
 
-        return redirect()->route('admin.students.index')
+        if (Auth::user()->role == 'admin'){
+            return redirect()->route('admin.students.index')
+                ->with('success', "Successfully updated student");
+        }
+
+        return redirect()->route('students.index')
             ->with('success', "Successfully updated student");
     }
 

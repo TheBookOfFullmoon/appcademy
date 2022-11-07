@@ -189,6 +189,52 @@ class StudentTest extends TestCase
         ]);
     }
 
+    public function test_update_student_using_student_role(){
+        $user = User::factory()->create(['role' => 'student']);
+
+        $major = Major::factory()->create();
+
+        $student = Student::factory()->create([
+            'user_id' => $user->id,
+            'major_id' => $major->id
+        ]);
+
+        $this->actingAs($user)->put("students/{$student->id}", [
+            'name' => 'update student',
+            'email' => 'update@email.com',
+            'password' => 'newpassword',
+            'birthday' => '2022-02-02',
+            'birth_place' => 'earth',
+            'address' => 'earth',
+            'phone' => '1234',
+            'gender' => 'man',
+            'role' => 'student',
+            'major_id' => $major->id,
+        ])->assertStatus(302)->assertRedirect("students")
+            ->assertSessionHas('success', "Successfully updated student");
+
+        $student = Student::first();
+
+        $this->assertInstanceOf(User::class, $student->user);
+
+        $this->assertDatabaseHas('students', [
+            'name' => 'update student',
+            'birthday' => '2022-02-02',
+            'birth_place' => 'earth',
+            'address' => 'earth',
+            'phone' => '1234',
+            'gender' => 'man',
+            'major_id' => $major->id,
+        ]);
+
+
+        $this->assertDatabaseHas('users', [
+            'id' => $student->user->id,
+            'email' => 'update@email.com',
+            'role' => 'student'
+        ]);
+    }
+
     public function test_destroy_student(){
         $user = User::factory()->create(['role' => 'admin']);
 
