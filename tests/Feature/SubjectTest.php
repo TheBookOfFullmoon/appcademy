@@ -176,6 +176,8 @@ class SubjectTest extends TestCase
         $this->actingAs($user)->delete("admin/subjects/{$subject->id}")
             ->assertStatus(302)->assertRedirect("admin/subjects")
             ->assertSessionHas('success', "Successfully deleted subject");
+
+        $this->assertDatabaseCount('subjects', 0);
     }
 
     public function test_invalid_subject_data_input(){
