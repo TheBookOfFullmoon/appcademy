@@ -68,7 +68,12 @@ class LecturerController extends Controller
             'phone' => $lecturerRequest->post('phone'),
         ]);
 
-        return redirect()->route('admin.lecturers.index')
+        if (Auth::user()->role == 'admin'){
+            return redirect()->route('admin.lecturers.index')
+                ->with('success', "Successfully updated lecturer");
+        }
+
+        return redirect()->route('lecturers.index')
             ->with('success', "Successfully updated lecturer");
     }
 

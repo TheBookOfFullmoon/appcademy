@@ -133,7 +133,7 @@ class LecturerTest extends TestCase
             ->assertStatus(302)->assertRedirect('lecturers');
     }
 
-    public function test_update_student(){
+    public function test_update_lecturer(){
         $user = User::factory()->create(['role' => 'admin']);
 
         $userLecturer = User::factory()->create(['role' => 'lecturer']);
@@ -153,6 +153,47 @@ class LecturerTest extends TestCase
             'gender' => 'male',
             'role' => 'lecturer',
         ])->assertStatus(302)->assertRedirect("admin/lecturers")
+            ->assertSessionHas('success', "Successfully updated lecturer");
+
+        $lecturer = Lecturer::first();
+
+        $this->assertInstanceOf(User::class, $lecturer->user);
+
+        $this->assertDatabaseHas('lecturers', [
+            'name' => 'update lecturer',
+            'birthday' => '2022-02-02',
+            'birth_place' => 'earth',
+            'address' => 'earth',
+            'phone' => '1234',
+            'gender' => 'male',
+        ]);
+
+
+        $this->assertDatabaseHas('users', [
+            'id' => $lecturer->user->id,
+            'email' => 'update@email.com',
+            'role' => 'lecturer'
+        ]);
+    }
+
+    public function test_update_lecturer_using_lecturer_role(){
+        $user = User::factory()->create(['role' => 'lecturer']);
+
+        $lecturer = Lecturer::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $this->actingAs($user)->put("lecturers/{$lecturer->id}", [
+            'name' => 'update lecturer',
+            'email' => 'update@email.com',
+            'password' => 'newpassword',
+            'birthday' => '2022-02-02',
+            'birth_place' => 'earth',
+            'address' => 'earth',
+            'phone' => '1234',
+            'gender' => 'male',
+            'role' => 'lecturer',
+        ])->assertStatus(302)->assertRedirect("lecturers")
             ->assertSessionHas('success', "Successfully updated lecturer");
 
         $lecturer = Lecturer::first();
