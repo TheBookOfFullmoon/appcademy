@@ -21,7 +21,7 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::resource('lecturers', \App\Http\Controllers\LecturerController::class)->middleware('lecturer');
+Route::resource('lecturers', \App\Http\Controllers\LecturerController::class)->except(['show', 'create', 'store', 'destroy'])->middleware('lecturer');
 
 Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['show', 'create', 'store', 'destroy'])->middleware('student');
 
