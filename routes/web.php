@@ -33,6 +33,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], f
    Route::resource('lecturers', \App\Http\Controllers\LecturerController::class);
 
    Route::resource('subjects', \App\Http\Controllers\SubjectController::class);
+
+   Route::resource('schedules', \App\Http\Controllers\ScheduleController::class);
 });
 
 
