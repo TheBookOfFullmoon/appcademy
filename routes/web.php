@@ -14,18 +14,22 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('layouts.dash_layout');
 });
 
-Auth::routes();
+//Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('login', [\App\Http\Controllers\AuthController::class, 'index'])->name('login');
+Route::post('post-login', [\App\Http\Controllers\AuthController::class, 'postLogin'])->name('login.post');
+Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
 Route::resource('lecturers', \App\Http\Controllers\LecturerController::class)->except(['show', 'create', 'store', 'destroy'])->middleware('lecturer');
 
 Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['show', 'create', 'store', 'destroy'])->middleware('student');
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function(){
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
    Route::resource('majors', \App\Http\Controllers\MajorController::class);
 
    Route::resource('students', \App\Http\Controllers\StudentController::class);
