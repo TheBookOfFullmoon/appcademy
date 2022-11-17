@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('layouts.dash_layout');
+    return redirect()->route('login');
 });
 
 //Auth::routes();
@@ -30,7 +30,7 @@ Route::resource('students', \App\Http\Controllers\StudentController::class)->exc
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function(){
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
-   Route::resource('majors', \App\Http\Controllers\MajorController::class);
+   Route::resource('majors', \App\Http\Controllers\MajorController::class)->except(['show']);
 
    Route::resource('students', \App\Http\Controllers\StudentController::class);
 
