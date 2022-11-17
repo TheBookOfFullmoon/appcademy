@@ -121,4 +121,18 @@ class MajorTest extends TestCase
 
         $this->assertDatabaseCount('majors', 0);
     }
+
+    public function test_search_major(){
+        $user = User::factory()->create(['role' => 'admin']);
+        $major = Major::factory(2)->create();
+
+        $this->assertDatabaseCount('majors', 2);
+
+        $major1 = Major::first();
+        $major2 = Major::find(2);
+
+        $this->actingAs($user)->get(route('admin.majors.search', [
+            'keyword' => $major1->name
+        ]))->assertStatus(200)->assertSeeText($major1->name)->assertDontSeeText($major2->name);
+    }
 }
