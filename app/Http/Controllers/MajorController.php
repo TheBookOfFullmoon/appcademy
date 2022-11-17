@@ -10,11 +10,12 @@ use Illuminate\Http\Request;
 class MajorController extends Controller
 {
     public function index(){
-        return "hello";
+        $majors = Major::paginate(5);
+        return view('admin.major.index', compact('majors'));
     }
 
     public function create(){
-        return "this is a create page";
+        return view('admin.major.create');
     }
 
     public function store(StoreMajorRequest $request){
@@ -25,7 +26,7 @@ class MajorController extends Controller
     }
 
     public function edit(Major $major){
-        return $major;
+        return view('admin.major.edit', compact('major'));
     }
 
     public function update(UpdateMajorRequest $request, Major $major){
