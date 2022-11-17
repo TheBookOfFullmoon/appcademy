@@ -29,8 +29,10 @@ Route::resource('lecturers', \App\Http\Controllers\LecturerController::class)->e
 Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['show', 'create', 'store', 'destroy'])->middleware('student');
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function(){
+
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
    Route::resource('majors', \App\Http\Controllers\MajorController::class)->except(['show']);
+   Route::get('majors/search', [\App\Http\Controllers\MajorController::class, 'search'])->name('majors.search');
 
    Route::resource('students', \App\Http\Controllers\StudentController::class);
 

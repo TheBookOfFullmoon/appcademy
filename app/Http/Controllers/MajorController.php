@@ -42,4 +42,11 @@ class MajorController extends Controller
         return redirect()->route('admin.majors.index')
             ->with('success', 'Successfully deleted major');
     }
+
+    public function search(Request $request){
+        $majors = Major::where('name', 'LIKE', '%'.$request->get('keyword').'%')
+            ->paginate(5);
+
+        return view('admin.major.index', compact('majors'));
+    }
 }
