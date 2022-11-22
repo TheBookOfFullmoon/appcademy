@@ -24,13 +24,14 @@ class UpdateStudentRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string|required',
-            'birthday' => 'date|required',
-            'birth_place' => 'string|required',
-            'address' => 'string|required',
-            'gender' => 'string|required',
-            'phone' => 'string|required',
-            'major_id' => 'integer|required',
+            'name' => 'required|string',
+            'birthday' => 'required|string',
+            'birth_place' => 'required|string',
+            'address' => 'required|string',
+            'gender' => 'required|string',
+            'phone' => 'required|string',
+            'email' => 'required|email',
+            'major_id' => 'required',
         ];
     }
 }
