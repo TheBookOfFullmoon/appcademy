@@ -75,7 +75,7 @@ class StudentTest extends TestCase
         $user = User::factory()->create(['role' => 'admin']);
         $major = Major::factory()->create();
 
-        $this->actingAs($user)->post('admin/students', [
+        $this->actingAs($user)->post(route('admin.students.store'), [
             'name' => 'new student',
             'email' => 'test@email.com',
             'birthday' => '2022-02-02',
@@ -83,18 +83,19 @@ class StudentTest extends TestCase
             'address' => 'earth',
             'phone' => '1234',
             'gender' => 'man',
-            'role' => 'student',
             'major_id' => $major->id,
-        ])->assertStatus(302)->assertRedirect('admin/students')
+        ])->assertStatus(302)->assertRedirect(route('admin.students.index'))
             ->assertSessionHas('success', 'Successfully created new student');
 
         $student = Student::first();
+        $major = Major::first();
 
         $this->assertInstanceOf(User::class, $student->user);
+        $this->assertInstanceOf(Major::class, $student->major);
 
         $this->assertDatabaseHas('students', [
             'name' => 'new student',
-            'birthday' => '2022-02-02',
+            'birthday' => '02/02/2022',
             'birth_place' => 'earth',
             'address' => 'earth',
             'phone' => '1234',
@@ -168,12 +169,14 @@ class StudentTest extends TestCase
         ->assertSessionHas('success', "Successfully updated student");
 
         $student = Student::first();
+        $major = Major::first();
 
         $this->assertInstanceOf(User::class, $student->user);
+        $this->assertInstanceOf(Major::class, $student->major);
 
         $this->assertDatabaseHas('students', [
             'name' => 'update student',
-            'birthday' => '2022-02-02',
+            'birthday' => '02/02/2022',
             'birth_place' => 'earth',
             'address' => 'earth',
             'phone' => '1234',
@@ -214,12 +217,14 @@ class StudentTest extends TestCase
             ->assertSessionHas('success', "Successfully updated student");
 
         $student = Student::first();
+        $major = Major::first();
 
         $this->assertInstanceOf(User::class, $student->user);
+        $this->assertInstanceOf(Major::class, $student->major);
 
         $this->assertDatabaseHas('students', [
             'name' => 'update student',
-            'birthday' => '2022-02-02',
+            'birthday' => '02/02/2022',
             'birth_place' => 'earth',
             'address' => 'earth',
             'phone' => '1234',
@@ -256,6 +261,72 @@ class StudentTest extends TestCase
 
         $this->assertDatabaseCount('students', 0);
         $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_search_student(){
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $studentUser = User::factory()->create(['role' => 'student']);
+        $studentUser2 = User::factory()->create(['role' => 'student']);
+        $major = Major::factory()->create();
+        $major2 = Major::factory()->create();
+        Student::factory()->create([
+            'major_id' => $major->id,
+            'user_id' => $studentUser->id,
+            'gender' => 'Female',
+            'birthday' => '2005/01/24',
+        ]);
+        Student::factory()->create([
+            'major_id' => $major2->id,
+            'user_id' => $studentUser2->id,
+            'gender' => 'Male',
+            'birthday' => '2004/01/24',
+        ]);
+
+        $this->assertDatabaseCount('students', 2);
+
+        $student1 = Student::first();
+        $student2 = Student::find(2);
+
+        $this->actingAs($user)->get(route('admin.students.search',[
+            'keyword' => $student1->name
+        ]))->assertStatus(200)->assertSeeText($student1->name)
+            ->assertDontSeeText($student2->name);
+
+        $this->actingAs($user)->get(route('admin.students.search',[
+            'keyword' => $student1->birth_place
+        ]))->assertStatus(200)->assertSeeText($student1->birth_place)
+            ->assertDontSeeText($student2->birth_place);
+
+        $this->actingAs($user)->get(route('admin.students.search',[
+            'keyword' => '2005'
+        ]))->assertStatus(200)->assertSeeText('2005')
+            ->assertDontSeeText('2004');
+
+        $this->actingAs($user)->get(route('admin.students.search',[
+            'keyword' => $student1->address
+        ]))->assertStatus(200)->assertSeeText($student1->address)
+            ->assertDontSeeText($student2->address);
+
+        $this->actingAs($user)->get(route('admin.students.search',[
+            'keyword' => $student1->gender
+        ]))->assertStatus(200)->assertSeeText($student1->gender)
+            ->assertDontSeeText($student2->gender);
+
+        $this->actingAs($user)->get(route('admin.students.search',[
+            'keyword' => $student1->user->email
+        ]))->assertStatus(200)->assertSeeText($student1->user->email)
+            ->assertDontSeeText($student2->user->email);
+
+        $this->actingAs($user)->get(route('admin.students.search',[
+            'keyword' => $student1->phone
+        ]))->assertStatus(200)->assertSeeText($student1->phone)
+            ->assertDontSeeText($student2->phone);
+
+        $this->actingAs($user)->get(route('admin.students.search',[
+            'keyword' => $student1->major->name
+        ]))->assertStatus(200)->assertSeeText($student1->major->name)
+            ->assertDontSeeText($student2->major->name);
     }
 
     /**
@@ -297,7 +368,7 @@ class StudentTest extends TestCase
             [
                 ['name' => 1, 'birthday' => 'asd', 'birth_place' => 1,
                     'address' => 1, 'gender' => 1, 'phone' => 1,
-                    'major_id' => 'ads'],
+                    'major_id' => ''],
                 ['name', 'birthday', 'birth_place',
                     'address', 'gender', 'phone',
                     'major_id']
