@@ -6,29 +6,36 @@ use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Major;
 use App\Models\Student;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
 {
     public function index(){
         if (Auth::user()->role == "admin"){
-            return "hai admin";
+            $students = Student::with('user', 'major')->paginate(5);
+
+            return view('admin.student.index', compact('students'));
         }
 
         return "hai student";
     }
 
     public function create(){
-        return "create page";
+        $majors = Major::all();
+
+        return view('admin.student.create', compact('majors'));
     }
 
     public function store(StoreStudentRequest $studentRequest, StoreUserRequest $userRequest){
         $user = User::create([
             'email' => $userRequest->post('email'),
             'password' => 'password',
-            'role' => $userRequest->post('role')
+            'role' => 'student'
         ]);
 
         Student::create([
@@ -47,7 +54,13 @@ class StudentController extends Controller
     }
 
     public function edit(Student $student){
-        return $student;
+        $majors = Major::all();
+
+        $birthday = Carbon::parse($student->birthday)->format('Y-m-d');
+//        dd($birthday);
+
+        return view('admin.student.edit', compact('student', 'majors', 'birthday'));
+
     }
 
     public function update(UpdateStudentRequest $studentRequest, Student $student, UpdateUserRequest $userRequest){
@@ -55,8 +68,8 @@ class StudentController extends Controller
 
         $user->update([
             'email' => $userRequest->post('email'),
-            'password' => $userRequest->post('password'),
-            'role' => $userRequest->post('role')
+            'password' => $user->password,
+            'role' => 'student'
         ]);
 
         $student->update([
@@ -87,5 +100,24 @@ class StudentController extends Controller
 
         return redirect()->route("admin.students.index")
             ->with('success', "Successfully deleted student");
+    }
+
+    public function search(Request $request){
+        $students = Student::with('user', 'major')
+            ->where('name', 'LIKE', '%'.$request->get('keyword').'%')
+            ->orWhere('birth_place', 'LIKE', '%'.$request->get('keyword').'%')
+            ->orWhere('birthday', 'LIKE', '%'.$request->get('keyword').'%')
+            ->orWhere('address', 'LIKE', '%'.$request->get('keyword').'%')
+            ->orWhere('gender', 'LIKE', '%'.$request->get('keyword').'%')
+            ->orWhere('phone', 'LIKE', '%'.$request->get('keyword').'%')
+            ->orWhereHas('user', function($q) use($request){
+                return $q->where('email', 'LIKE', '%'.$request->get('keyword'));
+            })
+            ->orWhereHas('major', function($q) use($request){
+                return $q->where('name', 'LIKE', '%'.$request->get('keyword'));
+            })
+            ->paginate(5);
+
+        return view('admin.student.index', compact('students'));
     }
 }
