@@ -16,12 +16,14 @@ class StudentFactory extends Factory
      */
     public function definition()
     {
+        $gender = fake()->randomElement(['Male', 'Female']);
+
         return [
             'name' => fake()->name(),
             'birthday' => fake()->date(),
             'birth_place' => fake()->country(),
             'address' => fake()->address(),
-            'gender' => 'male',
+            'gender' => $gender,
             'phone' => fake()->phoneNumber(),
         ];
     }
