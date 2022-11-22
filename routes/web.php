@@ -31,10 +31,12 @@ Route::resource('students', \App\Http\Controllers\StudentController::class)->exc
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function(){
 
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
+
    Route::resource('majors', \App\Http\Controllers\MajorController::class)->except(['show']);
    Route::get('majors/search', [\App\Http\Controllers\MajorController::class, 'search'])->name('majors.search');
 
-   Route::resource('students', \App\Http\Controllers\StudentController::class);
+   Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['show']);
+   Route::get('/students/search', [\App\Http\Controllers\StudentController::class, 'search'])->name('students.search');
 
    Route::resource('lecturers', \App\Http\Controllers\LecturerController::class);
 
