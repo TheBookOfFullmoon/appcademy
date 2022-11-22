@@ -20,8 +20,14 @@
             <form method="post" action="{{route('admin.majors.store')}}">
                 @csrf
                 <div class="row">
-                    <div class="col-">
-                        <div class="mb-3"><label class="form-label" for="username"><strong>Major Name</strong></label><input type="text" class="form-control" id="username" placeholder="Major Name" name="name" autocomplete="off" required value="{{old('name')}}"/></div>
+                    <div>
+                        <div class="mb-3">
+                            <label class="form-label" for="username"><strong>Major Name</strong></label><input type="text" class="form-control" id="username" placeholder="Major Name" name="name" autocomplete="off" required value="{{old('name')}}"/>
+
+                        </div>
+                        @error('name')
+                        <span class="text-danger mt-2">{{$message}}</span>
+                        @enderror
                     </div>
                 </div>
 {{--                <div class="row">--}}
