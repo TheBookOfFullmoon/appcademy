@@ -30,11 +30,13 @@
                                     @endif
                                     <h3 class="text-dark"></h3>
                                 </div>
-                                <form class="user" action="{{route('login.post')}}" method="POST">
+                                <form class="user needs-validation" novalidate action="{{route('login.post')}}" method="POST">
                                     @csrf
                                     <div class="mb-3">
                                         <input class="form-control form-control-user" type="email" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address..." name="email" value="{{old('email')}}" required autofocus>
-
+                                        <div class="invalid-feedback">
+                                            Please provide an email.
+                                        </div>
                                         @error('email')
                                             <span class="text-danger mt-2">
                                                 {{$message}}
@@ -43,7 +45,9 @@
                                     </div>
                                     <div class="mb-3">
                                         <input class="form-control form-control-user" type="password" id="exampleInputPassword" placeholder="Password" name="password" required>
-
+                                        <div class="invalid-feedback">
+                                            Please provide a password.
+                                        </div>
                                         @error('password')
                                             <span class="text-danger mt-2">
                                                 {{$message}}
@@ -65,6 +69,7 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{asset('assets/js/script.min.js')}}"></script>
+<script src="{{asset('assets/js/validation.js')}}"></script>
 </body>
 
 </html>
