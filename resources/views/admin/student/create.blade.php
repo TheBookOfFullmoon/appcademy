@@ -148,7 +148,10 @@
                 {{--                        <div class="mb-3"><label class="form-label" for="email"><strong>Email Address</strong></label><input type="email" class="form-control" id="email" placeholder="user@example.com" name="email" /></div>--}}
                 {{--                    </div>--}}
                 {{--                </div>--}}
-                <div class="mb-3 text-end"><button class="btn btn-primary" type="submit">Save</button></div>
+                <div class="mb-3 text-end">
+                    <a class="btn btn-warning" href="{{route('admin.students.index')}}">Back</a>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                </div>
             </form>
         </div>
     </div>
