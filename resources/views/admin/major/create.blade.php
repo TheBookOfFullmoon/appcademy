@@ -17,13 +17,15 @@
             <p class="text-primary m-0 fw-bold">Major Data</p>
         </div>
         <div class="card-body">
-            <form method="post" action="{{route('admin.majors.store')}}">
+            <form method="post" action="{{route('admin.majors.store')}}" class="needs-validation" novalidate>
                 @csrf
                 <div class="row">
                     <div class="mb-2">
                         <div class="mb-1">
-                            <label class="form-label" for="username"><strong>Major Name</strong></label><input type="text" class="form-control" id="username" placeholder="Major Name" name="name" autocomplete="off" required value="{{old('name')}}"/>
-
+                            <label class="form-label" for="name"><strong>Major Name</strong></label><input type="text" class="form-control" id="name" placeholder="Major Name" name="name" autocomplete="off" required value="{{old('name')}}"/>
+                            <div class="invalid-feedback">
+                                Please provide a name.
+                            </div>
                         </div>
                         @error('name')
                         <span class="text-danger mt-2">{{$message}}</span>
@@ -39,4 +41,8 @@
             </form>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script src="{{asset('assets/js/validation.js')}}"></script>
 @endsection
