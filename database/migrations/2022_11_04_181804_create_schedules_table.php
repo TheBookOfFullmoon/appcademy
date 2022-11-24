@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('day_name');
             $table->string('room');
-            $table->foreignId('subject_id')->constrained();
+            $table->foreignId('subject_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

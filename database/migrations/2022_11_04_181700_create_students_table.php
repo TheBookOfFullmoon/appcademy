@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('gender');
             $table->string('address');
             $table->string('phone');
-            $table->foreignId('major_id')->constrained();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('major_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

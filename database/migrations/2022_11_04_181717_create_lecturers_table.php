@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('gender');
             $table->string('phone');
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
