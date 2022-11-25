@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('lecturers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->date('birthday');
+            $table->string('birthday');
             $table->string('birth_place');
             $table->string('address');
             $table->string('gender');
