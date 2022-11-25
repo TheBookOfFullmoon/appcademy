@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMajorRequest;
 use App\Http\Requests\UpdateMajorRequest;
 use App\Models\Major;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MajorController extends Controller
@@ -37,6 +38,11 @@ class MajorController extends Controller
     }
 
     public function destroy(Major $major){
+        foreach($major->students as $student){
+            $user = User::find($student->user_id);
+            $user->delete();
+        }
+
         $major->delete();
 
         return redirect()->route('admin.majors.index')
