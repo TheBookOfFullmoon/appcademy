@@ -4,10 +4,7 @@
 
 @section('alert')
     @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{session('success')}}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        <div id="success-message" data-message="{{session('success')}}"></div>
     @endif
 @endsection
 
@@ -64,7 +61,7 @@
 
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-danger btn-sm" type="submit"><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-danger btn-sm delete" data-name="{{$student->name}}"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </form>
                             </td>
@@ -81,4 +78,57 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let elements = document.getElementsByClassName("delete");
+
+        let deleteModal = function(e) {
+            e.preventDefault();
+            let name = this.getAttribute("data-name");
+            let form = this.closest("form");
+
+            Swal.fire({
+                title: `Are you sure want to delete ${name} data?`,
+                text: ``,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            })
+        }
+
+        Array.from(elements).forEach(function(element) {
+            element.addEventListener('click', deleteModal);
+        });
+
+        let success = document.getElementById("success-message");
+
+        if (success != null){
+            let message = success.getAttribute("data-message");
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+            Toast.fire({
+                icon: 'success',
+                title: message
+            })
+        }
+        </script>
 @endsection
