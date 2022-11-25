@@ -79,7 +79,6 @@ class LecturerTest extends TestCase
             'address' => 'earth',
             'phone' => '1234',
             'gender' => 'male',
-            'role' => 'lecturer',
         ])->assertStatus(302)->assertRedirect('admin/lecturers')
             ->assertSessionHas('success', "Successfully created new lecturer");
 
@@ -89,7 +88,7 @@ class LecturerTest extends TestCase
 
         $this->assertDatabaseHas('lecturers', [
             'name' => 'new lecturer',
-            'birthday' => '2022-02-02',
+            'birthday' => '02/02/2022',
             'birth_place' => 'earth',
             'address' => 'earth',
             'phone' => '1234',
@@ -161,7 +160,7 @@ class LecturerTest extends TestCase
 
         $this->assertDatabaseHas('lecturers', [
             'name' => 'update lecturer',
-            'birthday' => '2022-02-02',
+            'birthday' => '02/02/2022',
             'birth_place' => 'earth',
             'address' => 'earth',
             'phone' => '1234',
@@ -202,7 +201,7 @@ class LecturerTest extends TestCase
 
         $this->assertDatabaseHas('lecturers', [
             'name' => 'update lecturer',
-            'birthday' => '2022-02-02',
+            'birthday' => '02/02/2022',
             'birth_place' => 'earth',
             'address' => 'earth',
             'phone' => '1234',
@@ -236,6 +235,63 @@ class LecturerTest extends TestCase
 
         $this->assertDatabaseCount('lecturers', 0);
         $this->assertDatabaseCount('users', 1);
+    }
+
+    public function test_search_lecturer(){
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $lecturerUser = User::factory()->create(['role' => 'lecturer']);
+        $lecturerUser2 = User::factory()->create(['role' => 'lecturer']);
+        Lecturer::factory()->create([
+            'user_id' => $lecturerUser->id,
+            'gender' => 'Female',
+            'birthday' => '2005/01/24',
+        ]);
+        Lecturer::factory()->create([
+            'user_id' => $lecturerUser2->id,
+            'gender' => 'Male',
+            'birthday' => '2004/01/24',
+        ]);
+
+        $this->assertDatabaseCount('lecturers', 2);
+
+        $lecturer1 = Lecturer::first();
+        $lecturer2 = Lecturer::find(2);
+
+        $this->actingAs($user)->get(route('admin.lecturers.search',[
+            'keyword' => $lecturer1->name
+        ]))->assertStatus(200)->assertSeeText($lecturer1->name)
+            ->assertDontSeeText($lecturer2->name);
+
+        $this->actingAs($user)->get(route('admin.lecturers.search',[
+            'keyword' => $lecturer1->birth_place
+        ]))->assertStatus(200)->assertSeeText($lecturer1->birth_place)
+            ->assertDontSeeText($lecturer2->birth_place);
+
+        $this->actingAs($user)->get(route('admin.lecturers.search',[
+            'keyword' => '2005'
+        ]))->assertStatus(200)->assertSeeText('2005')
+            ->assertDontSeeText('2004');
+
+        $this->actingAs($user)->get(route('admin.lecturers.search',[
+            'keyword' => $lecturer1->address
+        ]))->assertStatus(200)->assertSeeText($lecturer1->address)
+            ->assertDontSeeText($lecturer2->address);
+
+        $this->actingAs($user)->get(route('admin.lecturers.search',[
+            'keyword' => $lecturer1->gender
+        ]))->assertStatus(200)->assertSeeText($lecturer1->gender)
+            ->assertDontSeeText($lecturer2->gender);
+
+        $this->actingAs($user)->get(route('admin.lecturers.search',[
+            'keyword' => $lecturer1->user->email
+        ]))->assertStatus(200)->assertSeeText($lecturer1->user->email)
+            ->assertDontSeeText($lecturer2->user->email);
+
+        $this->actingAs($user)->get(route('admin.lecturers.search',[
+            'keyword' => $lecturer1->phone
+        ]))->assertStatus(200)->assertSeeText($lecturer1->phone)
+            ->assertDontSeeText($lecturer2->phone);
     }
 
     /**
