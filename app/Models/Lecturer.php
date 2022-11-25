@@ -27,4 +27,16 @@ class Lecturer extends Model
             set: fn($value) => Carbon::parse($value)->format('d/m/Y')
         );
     }
+
+    public function scopeSearch($query, $keyword){
+        return $query->where('name', 'LIKE', '%'.$keyword.'%')
+            ->orWhere('birth_place', 'LIKE', '%'.$keyword.'%')
+            ->orWhere('birthday', 'LIKE', '%'.$keyword.'%')
+            ->orWhere('address', 'LIKE', '%'.$keyword.'%')
+            ->orWhere('gender', 'LIKE', '%'.$keyword.'%')
+            ->orWhere('phone', 'LIKE', '%'.$keyword.'%')
+            ->orWhereHas('user', function($q) use($keyword){
+                return $q->where('email', 'LIKE', '%'.$keyword.'%');
+            });
+    }
 }
