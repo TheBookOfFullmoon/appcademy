@@ -38,7 +38,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], f
    Route::resource('students', \App\Http\Controllers\StudentController::class)->except(['show']);
    Route::get('/students/search', [\App\Http\Controllers\StudentController::class, 'search'])->name('students.search');
 
-   Route::resource('lecturers', \App\Http\Controllers\LecturerController::class);
+   Route::resource('lecturers', \App\Http\Controllers\LecturerController::class)->except(['show']);
+    Route::get('/lecturers/search', [\App\Http\Controllers\LecturerController::class, 'search'])->name('lecturers.search');
 
    Route::resource('subjects', \App\Http\Controllers\SubjectController::class);
 
