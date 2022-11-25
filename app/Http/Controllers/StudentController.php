@@ -104,19 +104,7 @@ class StudentController extends Controller
 
     public function search(Request $request){
         $students = Student::with('user', 'major')
-            ->where('name', 'LIKE', '%'.$request->get('keyword').'%')
-            ->orWhere('birth_place', 'LIKE', '%'.$request->get('keyword').'%')
-            ->orWhere('birthday', 'LIKE', '%'.$request->get('keyword').'%')
-            ->orWhere('address', 'LIKE', '%'.$request->get('keyword').'%')
-            ->orWhere('gender', 'LIKE', '%'.$request->get('keyword').'%')
-            ->orWhere('phone', 'LIKE', '%'.$request->get('keyword').'%')
-            ->orWhereHas('user', function($q) use($request){
-                return $q->where('email', 'LIKE', '%'.$request->get('keyword'));
-            })
-            ->orWhereHas('major', function($q) use($request){
-                return $q->where('name', 'LIKE', '%'.$request->get('keyword'));
-            })
-            ->paginate(5);
+            ->search($request->get('keyword'))->paginate(5);
 
         return view('admin.student.index', compact('students'));
     }
