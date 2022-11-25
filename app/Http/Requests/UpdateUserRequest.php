@@ -25,8 +25,14 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules()
     {
+        if ($this->student != null){
+            $user = $this->student->user;
+        }else{
+            $user = $this->lecturer->user;
+        }
+
         return [
-            'email' => ['required', 'email', Rule::unique('users')->ignore($this->student->user)],
+            'email' => ['required', 'email', Rule::unique('users')->ignore($user)],
 //            'role' => 'required|string',
             'password' => 'nullable'
         ];
