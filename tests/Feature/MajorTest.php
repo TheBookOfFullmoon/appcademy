@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Major;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -111,20 +112,29 @@ class MajorTest extends TestCase
 
     public function test_destroy_major(){
         $user = User::factory()->create(['role'=>'admin']);
+        $studentUser = User::factory()->create(['role' => 'student']);
         $major = Major::factory()->create();
+        Student::factory()->create([
+            'user_id' => $studentUser->id,
+            'major_id' => $major->id
+        ]);
 
         $this->assertDatabaseCount('majors', 1);
+        $this->assertDatabaseCount('students', 1);
+        $this->assertDatabaseCount('users', 2);
 
         $this->actingAs($user)->delete("admin/majors/{$major->id}")
             ->assertStatus(302)->assertRedirect('admin/majors')
             ->assertSessionHas('success', 'Successfully deleted major');
 
         $this->assertDatabaseCount('majors', 0);
+        $this->assertDatabaseCount('students', 0);
+        $this->assertDatabaseCount('users', 1);
     }
 
     public function test_search_major(){
         $user = User::factory()->create(['role' => 'admin']);
-        $major = Major::factory(2)->create();
+        Major::factory(2)->create();
 
         $this->assertDatabaseCount('majors', 2);
 
