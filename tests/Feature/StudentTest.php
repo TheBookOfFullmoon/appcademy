@@ -366,7 +366,7 @@ class StudentTest extends TestCase
 
             ],
             [
-                ['name' => 1, 'birthday' => 'asd', 'birth_place' => 1,
+                ['name' => 1, 'birthday' => 1, 'birth_place' => 1,
                     'address' => 1, 'gender' => 1, 'phone' => 1,
                     'major_id' => ''],
                 ['name', 'birthday', 'birth_place',
