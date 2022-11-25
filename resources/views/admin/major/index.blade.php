@@ -52,7 +52,7 @@
 
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-danger btn-sm" type="submit"><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-danger btn-sm delete" data-name="{{$major->name}}" data-student="{{$major->students->count()}}"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </form>
                             </td>
@@ -69,4 +69,36 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let elements = document.getElementsByClassName("delete");
+
+        let deleteModal = function(e) {
+            e.preventDefault();
+            let name = this.getAttribute("data-name");
+            let studentCount = this.getAttribute("data-student")
+            let form = this.closest("form");
+
+            Swal.fire({
+                title: `Are you sure want to delete ${name} data?`,
+                text: `There are ${studentCount} student data that will also deleted!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            })
+        }
+
+        Array.from(elements).forEach(function(element) {
+            element.addEventListener('click', deleteModal);
+        });
+    </script>
 @endsection
