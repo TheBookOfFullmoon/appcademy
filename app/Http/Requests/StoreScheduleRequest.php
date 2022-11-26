@@ -26,7 +26,7 @@ class StoreScheduleRequest extends FormRequest
         return [
             'day_name' => 'required|string',
             'room' => 'required|string',
-            'subject_id' => 'required|integer'
+//            'subject_id' => 'required|integer'
         ];
     }
 }
