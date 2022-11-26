@@ -16,4 +16,22 @@ class Subject extends Model
     public function lecturer(){
         return $this->belongsTo(Lecturer::class);
     }
+
+    public function schedule(){
+        return $this->hasOne(Schedule::class);
+    }
+
+    public function scopeSearch($query, $keyword){
+        return $query->where('name', 'LIKE', '%'.$keyword.'%')
+            ->orWhere('sks', '=', '%'.$keyword.'%')
+            ->orWhereHas('schedule', function ($q) use($keyword){
+                return $q->where('room', 'LIKE', '%'.$keyword.'%');
+            })
+            ->orWhereHas('schedule', function($q) use($keyword){
+                return $q->where('day_name', 'LIKE', '%'.$keyword.'%');
+            })
+            ->orWhereHas('lecturer', function($q) use($keyword){
+                return $q->where('name', 'LIKE', '%'.$keyword.'%');
+            });
+    }
 }
