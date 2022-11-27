@@ -43,6 +43,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], f
 
    Route::resource('subjects', \App\Http\Controllers\SubjectController::class)->except(['show']);
    Route::get('/subjects/search', [\App\Http\Controllers\SubjectController::class, 'search'])->name('subjects.search');
+   Route::get('/subjects/{subject}/assigned', [\App\Http\Controllers\SubjectController::class, 'assigned'])->name('subjects.assigned');
+   Route::get('/subjects/{subject}/unassigned', [\App\Http\Controllers\SubjectController::class, 'unassigned'])->name('subjects.unassigned');
 
    Route::resource('schedules', \App\Http\Controllers\ScheduleController::class);
 });
