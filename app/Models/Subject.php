@@ -21,6 +21,11 @@ class Subject extends Model
         return $this->hasOne(Schedule::class);
     }
 
+    public function students()
+    {
+        return $this->belongsToMany(Student::class)->withPivot('grade');
+    }
+
     public function scopeSearch($query, $keyword){
         return $query->where('name', 'LIKE', '%'.$keyword.'%')
             ->orWhere('sks', '=', '%'.$keyword.'%')
