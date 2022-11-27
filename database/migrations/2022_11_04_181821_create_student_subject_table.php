@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('student_id')
                 ->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('subject_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->float('grade');
+            $table->float('grade')->nullable();
             $table->timestamps();
         });
     }
