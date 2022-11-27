@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateScheduleRequest;
 use App\Http\Requests\UpdateSubjectRequest;
 use App\Models\Lecturer;
 use App\Models\Schedule;
+use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 
@@ -84,5 +85,19 @@ class SubjectController extends Controller
             ->paginate(5);
 
         return view('admin.subject.index', compact('subjects'));
+    }
+
+    public function assigned(Subject $subject)
+    {
+        $students = Student::assignedStudents($subject->id)->paginate(5);
+
+        return view('admin.subject.assigned', compact('subject', 'students'));
+    }
+
+    public function unassigned(Subject $subject)
+    {
+        $students = Student::unassignedStudents($subject->id)->paginate(5);
+
+        return view('admin.subject.unassigned', compact('students', 'subject'));
     }
 }
