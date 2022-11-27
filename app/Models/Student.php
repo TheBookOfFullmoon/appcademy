@@ -33,6 +33,11 @@ class Student extends Model
         return $this->belongsTo(Major::class);
     }
 
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class)->withPivot('grade');
+    }
+
     protected function birthday(): Attribute{
         return Attribute::make(
           get: fn($value) => Carbon::createFromFormat('d/m/Y', $value)->format('d-m-Y'),
@@ -53,5 +58,19 @@ class Student extends Model
             ->orWhereHas('major', function($q) use($keyword){
                 return $q->where('name', 'LIKE', '%'.$keyword.'%');
             });
+    }
+
+    public function scopeAssignedStudents($query, $subject_id)
+    {
+        return $query->select('name')->whereHas('subjects', function($q) use($subject_id){
+            return $q->where('subject_id', '=', $subject_id);
+        })->groupBy('name');
+    }
+
+    public function scopeUnassignedStudents($query, $subject_id)
+    {
+        return $query->select('name')->whereHas('subjects', function($q) use($subject_id){
+            return $q->where('subject_id', '!=', $subject_id);
+        })->orWhereDoesntHave('subjects')->groupBy('name');
     }
 }
