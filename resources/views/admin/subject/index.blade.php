@@ -45,7 +45,7 @@
                     <tbody>
                     @foreach($subjects as $subject)
                         <tr>
-                            <td>{{$subject->name}}</td>
+                            <td><a class="link-primary" href="{{route('admin.subjects.assigned', $subject->id)}}">{{$subject->name}}</a></td>
                             <td>{{$subject->sks}}</td>
                             <td>{{$subject->schedule->room}}</td>
                             <td>{{$subject->schedule->day_name}}</td>
