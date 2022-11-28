@@ -99,12 +99,19 @@ class SubjectController extends Controller
         return view('admin.subject.assigned', compact('subject', 'students'));
     }
 
+    public function searchAssigned(Subject $subject, Request $request)
+    {
+        $students = Student::searchAssignedStudents($subject->id, $request->get('keyword'))->paginate(5);
+
+        return view('admin.subject.assigned', compact('subject', 'students'));
+    }
+
     public function assign(Subject $subject, Student $student)
     {
         $subject->students()->attach($student->id);
 
         return redirect()
-            ->back()
+            ->route('admin.subjects.unassigned', $subject->id)
             ->with('success', "Successfully assigned student to subject.");
     }
 
@@ -115,12 +122,19 @@ class SubjectController extends Controller
         return view('admin.subject.unassigned', compact('students', 'subject'));
     }
 
+    public function searchUnassigned(Subject $subject, Request $request)
+    {
+        $students = Student::searchUnassignedStudents($subject->id, $request->get('keyword'))->paginate(5);
+
+        return view('admin.subject.unassigned', compact('subject', 'students'));
+    }
+
     public function unassign(Subject $subject, Student $student)
     {
         $subject->students()->detach($student->id);
 
         return redirect()
-            ->back()
+            ->route('admin.subjects.assigned', $subject->id)
             ->with('success', "Successfully unassigned student from subject");
     }
 }
