@@ -26,7 +26,7 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <form action="{{route('admin.subjects.search')}}" method="GET">
+                <form action="{{route('admin.subjects.unassigned.search', $subject->id)}}" method="GET">
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" placeholder="Search Keyword..." aria-label="Example text with button addon" aria-describedby="button-addon1" name="keyword">
                         <button class="btn btn-warning" type="submit" id="button-addon1"><i class="fas fa-search" ></i> Search</button>
