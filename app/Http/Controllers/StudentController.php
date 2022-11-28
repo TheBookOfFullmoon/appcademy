@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
 {
@@ -32,22 +33,24 @@ class StudentController extends Controller
     }
 
     public function store(StoreStudentRequest $studentRequest, StoreUserRequest $userRequest){
-        $user = User::create([
-            'email' => $userRequest->post('email'),
-            'password' => 'password',
-            'role' => 'student'
-        ]);
+        DB::transaction(function () use ($studentRequest, $userRequest){
+            $user = User::create([
+                'email' => $userRequest->post('email'),
+                'password' => 'password',
+                'role' => 'student'
+            ]);
 
-        Student::create([
-            'name' => $studentRequest->post('name'),
-            'birthday' => $studentRequest->post('birthday'),
-            'birth_place' => $studentRequest->post('birth_place'),
-            'address' => $studentRequest->post('address'),
-            'gender' => $studentRequest->post('gender'),
-            'phone' => $studentRequest->post('phone'),
-            'major_id' => $studentRequest->post('major_id'),
-            'user_id'=> $user->id
-        ]);
+            Student::create([
+                'name' => $studentRequest->post('name'),
+                'birthday' => $studentRequest->post('birthday'),
+                'birth_place' => $studentRequest->post('birth_place'),
+                'address' => $studentRequest->post('address'),
+                'gender' => $studentRequest->post('gender'),
+                'phone' => $studentRequest->post('phone'),
+                'major_id' => $studentRequest->post('major_id'),
+                'user_id'=> $user->id
+            ]);
+        });
 
         return redirect()->route('admin.students.index')
             ->with('success', 'Successfully created new student');
@@ -64,23 +67,27 @@ class StudentController extends Controller
     }
 
     public function update(UpdateStudentRequest $studentRequest, Student $student, UpdateUserRequest $userRequest){
-        $user = User::find($student->user->id);
 
-        $user->update([
-            'email' => $userRequest->post('email'),
-            'password' => $user->password,
-            'role' => 'student'
-        ]);
 
-        $student->update([
-            'name' => $studentRequest->post('name'),
-            'birthday' => $studentRequest->post('birthday'),
-            'birth_place' => $studentRequest->post('birth_place'),
-            'address' => $studentRequest->post('address'),
-            'gender' => $studentRequest->post('gender'),
-            'phone' => $studentRequest->post('phone'),
-            'major_id' => $studentRequest->post('major_id'),
-        ]);
+        DB::transaction(function () use($studentRequest, $userRequest, $student){
+            $user = User::find($student->user->id);
+
+            $user->update([
+                'email' => $userRequest->post('email'),
+                'password' => $user->password,
+                'role' => 'student'
+            ]);
+
+            $student->update([
+                'name' => $studentRequest->post('name'),
+                'birthday' => $studentRequest->post('birthday'),
+                'birth_place' => $studentRequest->post('birth_place'),
+                'address' => $studentRequest->post('address'),
+                'gender' => $studentRequest->post('gender'),
+                'phone' => $studentRequest->post('phone'),
+                'major_id' => $studentRequest->post('major_id'),
+            ]);
+        });
 
         if (Auth::user()->role == 'admin'){
             return redirect()->route('admin.students.index')
@@ -92,11 +99,13 @@ class StudentController extends Controller
     }
 
     public function destroy(Student $student){
-        $student->delete();
+        DB::transaction(function() use($student){
+            $student->delete();
 
-        $user = User::find($student->user->id);
+            $user = User::find($student->user->id);
 
-        $user->delete();
+            $user->delete();
+        });
 
         return redirect()->route("admin.students.index")
             ->with('success', "Successfully deleted student");

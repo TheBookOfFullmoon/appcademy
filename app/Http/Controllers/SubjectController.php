@@ -11,6 +11,7 @@ use App\Models\Schedule;
 use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
 {
@@ -30,17 +31,19 @@ class SubjectController extends Controller
     }
 
     public function store(StoreSubjectRequest $subjectRequest, StoreScheduleRequest $scheduleRequest){
-        $subject = Subject::create([
-            'name' => $subjectRequest->post('name'),
-            'sks' => $subjectRequest->post('sks'),
-            'lecturer_id' => $subjectRequest->post('lecturer_id')
-        ]);
+        DB::transaction(function () use($subjectRequest, $scheduleRequest){
+            $subject = Subject::create([
+                'name' => $subjectRequest->post('name'),
+                'sks' => $subjectRequest->post('sks'),
+                'lecturer_id' => $subjectRequest->post('lecturer_id')
+            ]);
 
-        Schedule::create([
-            'day_name' => $scheduleRequest->post('day_name'),
-            'room' => $scheduleRequest->post('room'),
-            'subject_id' => $subject->id
-        ]);
+            Schedule::create([
+                'day_name' => $scheduleRequest->post('day_name'),
+                'room' => $scheduleRequest->post('room'),
+                'subject_id' => $subject->id
+            ]);
+        });
 
         return redirect()->route('admin.subjects.index')
             ->with('success', "Successfully created a new subject");
@@ -55,18 +58,20 @@ class SubjectController extends Controller
     }
 
     public function update(UpdateSubjectRequest $subjectRequest, Subject $subject, UpdateScheduleRequest $scheduleRequest){
-        $subject->update([
-            'name' => $subjectRequest->name,
-            'sks' => $subjectRequest->sks,
-            'lecturer_id' => $subjectRequest->lecturer_id
-        ]);
+        DB::transaction(function () use($subjectRequest, $subject, $scheduleRequest){
+            $subject->update([
+                'name' => $subjectRequest->name,
+                'sks' => $subjectRequest->sks,
+                'lecturer_id' => $subjectRequest->lecturer_id
+            ]);
 
-        $schedule = Schedule::where('subject_id', '=', $subject->id);
+            $schedule = Schedule::where('subject_id', '=', $subject->id);
 
-        $schedule->update([
-            'day_name' => $scheduleRequest->day_name,
-            'room' => $scheduleRequest->room
-        ]);
+            $schedule->update([
+                'day_name' => $scheduleRequest->day_name,
+                'room' => $scheduleRequest->room
+            ]);
+        });
 
         return redirect()->route("admin.subjects.index")
             ->with('success', "Successfully updated subject");

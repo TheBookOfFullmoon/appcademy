@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class LecturerController extends Controller
 {
@@ -30,21 +31,23 @@ class LecturerController extends Controller
     }
 
     public function store(StoreLecturerRequest $lecturerRequest, StoreUserRequest $userRequest){
-        $user = User::create([
-            'email' => $userRequest->post('email'),
-            'password' => 'password',
-            'role' => 'lecturer'
-        ]);
+        DB::transaction(function() use($lecturerRequest, $userRequest){
+            $user = User::create([
+                'email' => $userRequest->post('email'),
+                'password' => 'password',
+                'role' => 'lecturer'
+            ]);
 
-        Lecturer::create([
-            'name' => $lecturerRequest->post('name'),
-            'birthday' => $lecturerRequest->post('birthday'),
-            'birth_place' => $lecturerRequest->post('birth_place'),
-            'address' => $lecturerRequest->post('address'),
-            'gender' => $lecturerRequest->post('gender'),
-            'phone' => $lecturerRequest->post('phone'),
-            'user_id'=> $user->id
-        ]);
+            Lecturer::create([
+                'name' => $lecturerRequest->post('name'),
+                'birthday' => $lecturerRequest->post('birthday'),
+                'birth_place' => $lecturerRequest->post('birth_place'),
+                'address' => $lecturerRequest->post('address'),
+                'gender' => $lecturerRequest->post('gender'),
+                'phone' => $lecturerRequest->post('phone'),
+                'user_id'=> $user->id
+            ]);
+        });
 
         return redirect()->route('admin.lecturers.index')
             ->with('success', "Successfully created new lecturer");
@@ -58,22 +61,24 @@ class LecturerController extends Controller
     }
 
     public function update(UpdateLecturerRequest $lecturerRequest, Lecturer $lecturer, UpdateUserRequest $userRequest){
-        $user = User::find($lecturer->user->id);
+        DB::transaction(function() use($lecturerRequest, $lecturer, $userRequest){
+            $user = User::find($lecturer->user->id);
 
-        $user->update([
-            'email' => $userRequest->post('email'),
-            'password' => $user->password,
-            'role' => 'lecturer'
-        ]);
+            $user->update([
+                'email' => $userRequest->post('email'),
+                'password' => $user->password,
+                'role' => 'lecturer'
+            ]);
 
-        $lecturer->update([
-            'name' => $lecturerRequest->post('name'),
-            'birthday' => $lecturerRequest->post('birthday'),
-            'birth_place' => $lecturerRequest->post('birth_place'),
-            'address' => $lecturerRequest->post('address'),
-            'gender' => $lecturerRequest->post('gender'),
-            'phone' => $lecturerRequest->post('phone'),
-        ]);
+            $lecturer->update([
+                'name' => $lecturerRequest->post('name'),
+                'birthday' => $lecturerRequest->post('birthday'),
+                'birth_place' => $lecturerRequest->post('birth_place'),
+                'address' => $lecturerRequest->post('address'),
+                'gender' => $lecturerRequest->post('gender'),
+                'phone' => $lecturerRequest->post('phone'),
+            ]);
+        });
 
         if (Auth::user()->role == 'admin'){
             return redirect()->route('admin.lecturers.index')
@@ -85,10 +90,12 @@ class LecturerController extends Controller
     }
 
     public function destroy(Lecturer $lecturer){
-        $user = User::find($lecturer->user->id);
-        $user->delete();
+        DB::transaction(function() use($lecturer){
+            $user = User::find($lecturer->user->id);
+            $user->delete();
 
-        $lecturer->delete();
+            $lecturer->delete();
+        });
 
         return redirect()->route("admin.lecturers.index")
             ->with('success', "Successfully deleted lecturer");
