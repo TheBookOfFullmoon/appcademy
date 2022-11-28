@@ -62,15 +62,15 @@ class Student extends Model
 
     public function scopeAssignedStudents($query, $subject_id)
     {
-        return $query->select('name')->whereHas('subjects', function($q) use($subject_id){
+        return $query->select('id', 'name')->whereHas('subjects', function($q) use($subject_id){
             return $q->where('subject_id', '=', $subject_id);
-        })->groupBy('name');
+        })->groupBy('id', 'name');
     }
 
     public function scopeUnassignedStudents($query, $subject_id)
     {
-        return $query->select('name')->whereHas('subjects', function($q) use($subject_id){
+        return $query->select('id', 'name')->whereHas('subjects', function($q) use($subject_id){
             return $q->where('subject_id', '!=', $subject_id);
-        })->orWhereDoesntHave('subjects')->groupBy('name');
+        })->orWhereDoesntHave('subjects')->groupBy('id', 'name');
     }
 }
