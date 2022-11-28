@@ -99,7 +99,7 @@ class SubjectController extends Controller
         $subject->students()->attach($student->id);
 
         return redirect()
-            ->route('admin.subjects.assigned', $subject->id)
+            ->back()
             ->with('success', "Successfully assigned student to subject.");
     }
 
@@ -108,5 +108,14 @@ class SubjectController extends Controller
         $students = Student::unassignedStudents($subject->id)->paginate(5);
 
         return view('admin.subject.unassigned', compact('students', 'subject'));
+    }
+
+    public function unassign(Subject $subject, Student $student)
+    {
+        $subject->students()->detach($student->id);
+
+        return redirect()
+            ->back()
+            ->with('success', "Successfully unassigned student from subject");
     }
 }
