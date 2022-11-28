@@ -150,4 +150,81 @@ class StudentSubjectTest extends TestCase
 
         $this->assertDatabaseCount('student_subject', 0);
     }
+
+    public function test_search_assigned_students()
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $major = Major::factory()->create();
+
+        $userStudent = User::factory()->create(['role' => 'student']);
+        $student = Student::factory()->create([
+            'user_id' => $userStudent->id,
+            'major_id' => $major->id
+        ]);
+        $userStudent2 = User::factory()->create(['role' => 'student']);
+        $student2 = Student::factory()->create([
+            'user_id' => $userStudent2->id,
+            'major_id' => $major->id
+        ]);
+
+        $userLecturer = User::factory()->create(['role' => 'lecturer']);
+        $lecturer = Lecturer::factory()->create([
+            'user_id' => $userLecturer->id,
+        ]);
+
+        $subject = Subject::factory()->create([
+            'lecturer_id' => $lecturer->id
+        ]);
+
+        $subject->students()->attach($student->id);
+        $subject->students()->attach($student2->id);
+
+        $this->actingAs($user)->get(route('admin.subjects.assigned', $subject->id))
+            ->assertStatus(200)
+            ->assertSeeText($student->name)
+            ->assertSeeText($student2->name);
+
+        $this->actingAs($user)->get(route('admin.subjects.assigned.search', ['subject' => $subject->id, 'keyword' => $student->name]))
+            ->assertStatus(200)
+            ->assertSeeText($student->name)
+            ->assertDontSeeText($student2->name);
+    }
+
+    public function test_search_unassigned_students()
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $major = Major::factory()->create();
+
+        $userStudent = User::factory()->create(['role' => 'student']);
+        $student = Student::factory()->create([
+            'user_id' => $userStudent->id,
+            'major_id' => $major->id
+        ]);
+        $userStudent2 = User::factory()->create(['role' => 'student']);
+        $student2 = Student::factory()->create([
+            'user_id' => $userStudent2->id,
+            'major_id' => $major->id
+        ]);
+
+        $userLecturer = User::factory()->create(['role' => 'lecturer']);
+        $lecturer = Lecturer::factory()->create([
+            'user_id' => $userLecturer->id,
+        ]);
+
+        $subject = Subject::factory()->create([
+            'lecturer_id' => $lecturer->id
+        ]);
+
+        $this->actingAs($user)->get(route('admin.subjects.unassigned', $subject->id))
+            ->assertStatus(200)
+            ->assertSeeText($student->name)
+            ->assertSeeText($student2->name);
+
+        $this->actingAs($user)->get(route('admin.subjects.unassigned.search', ['subject' => $subject->id, 'keyword' => $student->name]))
+            ->assertStatus(200)
+            ->assertSeeText($student->name)
+            ->assertDontSeeText($student2->name);
+    }
 }
