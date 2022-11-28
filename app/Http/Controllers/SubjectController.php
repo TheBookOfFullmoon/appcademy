@@ -94,6 +94,15 @@ class SubjectController extends Controller
         return view('admin.subject.assigned', compact('subject', 'students'));
     }
 
+    public function assign(Subject $subject, Student $student)
+    {
+        $subject->students()->attach($student->id);
+
+        return redirect()
+            ->route('admin.subjects.assigned', $subject->id)
+            ->with('success', "Successfully assigned student to subject.");
+    }
+
     public function unassigned(Subject $subject)
     {
         $students = Student::unassignedStudents($subject->id)->paginate(5);
