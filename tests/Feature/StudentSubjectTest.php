@@ -44,7 +44,7 @@ class StudentSubjectTest extends TestCase
 
         $userStudent2 = User::factory()->create(['role' => 'student']);
         $student2 = Student::factory()->create([
-            'user_id' => $userStudent->id,
+            'user_id' => $userStudent2->id,
             'major_id' => $major->id
         ]);
 
@@ -74,5 +74,36 @@ class StudentSubjectTest extends TestCase
             ->assertStatus(200)
             ->assertSeeText($student2->name)
             ->assertDontSeeText($student->name);
+    }
+
+    public function test_assign_student(){
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $major = Major::factory()->create();
+
+        $userStudent = User::factory()->create(['role' => 'student']);
+        $student = Student::factory()->create([
+            'user_id' => $userStudent->id,
+            'major_id' => $major->id
+        ]);
+
+        $userLecturer = User::factory()->create(['role' => 'lecturer']);
+        $lecturer = Lecturer::factory()->create([
+            'user_id' => $userLecturer->id,
+        ]);
+
+        $subject = Subject::factory()->create([
+            'lecturer_id' => $lecturer->id
+        ]);
+
+        $this->actingAs($user)->get(route('admin.subjects.assigned', $subject->id))
+            ->assertStatus(200)
+            ->assertDontSeeText($student->name);
+
+        $this->actingAs($user)->post(route('admin.subjects.assign', [$subject->id, $student->id]))
+            ->assertStatus(302)
+            ->assertSessionHas('success', "Successfully assigned student to subject.");
+
+        $this->assertDatabaseCount('student_subject', 1);
     }
 }
