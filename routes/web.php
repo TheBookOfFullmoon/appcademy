@@ -47,6 +47,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], f
    Route::post('subjects/{subject}/assign/{student}', [\App\Http\Controllers\SubjectController::class, 'assign'])->name('subjects.assign');
    Route::get('/subjects/{subject}/unassigned', [\App\Http\Controllers\SubjectController::class, 'unassigned'])->name('subjects.unassigned');
    Route::delete('/subjects/{subject}/unassigned/{student}', [\App\Http\Controllers\SubjectController::class, 'unassign'])->name('subjects.unassign');
+   Route::get('subjects/{subject}/assigned/search', [\App\Http\Controllers\SubjectController::class, 'searchAssigned'])->name('subjects.assigned.search');
+   Route::get('subjects/{subject}/unassigned/search', [\App\Http\Controllers\SubjectController::class, 'searchUnassigned'])->name('subjects.unassigned.search');
 });
 
 
