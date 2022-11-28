@@ -60,8 +60,8 @@ class StudentSubjectTest extends TestCase
             'lecturer_id' => $lecturer->id
         ]);
 
-        $student->subjects()->attach($subject->id);
-        $student2->subjects()->attach($subject2->id);
+        $subject->students()->attach($student->id);
+        $subject2->students()->attach($student2->id);
 
         $this->assertDatabaseCount('student_subject', 2);
 
@@ -96,14 +96,58 @@ class StudentSubjectTest extends TestCase
             'lecturer_id' => $lecturer->id
         ]);
 
-        $this->actingAs($user)->get(route('admin.subjects.assigned', $subject->id))
+        $this->actingAs($user)->get(route('admin.subjects.unassigned', $subject->id))
             ->assertStatus(200)
-            ->assertDontSeeText($student->name);
+            ->assertSeeText($student->name);
 
         $this->actingAs($user)->post(route('admin.subjects.assign', [$subject->id, $student->id]))
             ->assertStatus(302)
+            ->assertRedirect(route('admin.subjects.unassigned', $subject->id))
             ->assertSessionHas('success', "Successfully assigned student to subject.");
 
+        $this->actingAs($user)->get(route('admin.subjects.assigned', $subject->id))
+            ->assertStatus(200)
+            ->assertSeeText($student->name);
+
         $this->assertDatabaseCount('student_subject', 1);
+    }
+
+    public function test_unassign_student()
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $major = Major::factory()->create();
+
+        $userStudent = User::factory()->create(['role' => 'student']);
+        $student = Student::factory()->create([
+            'user_id' => $userStudent->id,
+            'major_id' => $major->id
+        ]);
+
+        $userLecturer = User::factory()->create(['role' => 'lecturer']);
+        $lecturer = Lecturer::factory()->create([
+            'user_id' => $userLecturer->id,
+        ]);
+
+        $subject = Subject::factory()->create([
+            'lecturer_id' => $lecturer->id
+        ]);
+
+        $subject->students()->attach($student->id);
+
+        $this->actingAs($user)->get(route('admin.subjects.assigned', $subject->id))
+            ->assertStatus(200)
+            ->assertSeeText($student->name);
+
+        $this->actingAs($user)->delete(route('admin.subjects.unassign', [$subject->id, $student->id]))
+            ->assertStatus(302)
+            ->assertRedirect(route('admin.subjects.assigned', $subject->id))
+            ->assertSessionHas('success', "Successfully unassigned student from subject");
+
+        $this->actingAs($user)->get(route('admin.subjects.unassigned', $subject->id))
+            ->assertStatus(200)
+            ->assertSeeText($student->name);
+
+        $this->assertDatabaseCount('student_subject', 0);
     }
 }
