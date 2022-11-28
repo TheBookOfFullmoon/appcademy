@@ -67,10 +67,27 @@ class Student extends Model
         })->groupBy('id', 'name');
     }
 
+    public function scopeSearchAssignedStudents($query, $subject_id, $keyword)
+    {
+        return $query->select('id', 'name')->whereHas('subjects', function($q) use($subject_id){
+            return $q->where('subject_id', '=', $subject_id);
+        })->where('name', 'LIKE', '%'.$keyword.'%')
+            ->groupBy('id', 'name');
+    }
+
     public function scopeUnassignedStudents($query, $subject_id)
     {
         return $query->select('id', 'name')->whereHas('subjects', function($q) use($subject_id){
             return $q->where('subject_id', '!=', $subject_id);
         })->orWhereDoesntHave('subjects')->groupBy('id', 'name');
+    }
+
+    public function scopeSearchUnassignedStudents($query, $subject_id, $keyword)
+    {
+        return $query->select('id', 'name')->whereHas('subjects', function($q) use($subject_id){
+            return $q->where('subject_id', '!=', $subject_id);
+        })->orWhereDoesntHave('subjects')
+            ->where('name', 'LIKE', '%'.$keyword.'%')
+            ->groupBy('id', 'name');
     }
 }
