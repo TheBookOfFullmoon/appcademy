@@ -17,7 +17,7 @@ class SubjectFactory extends Factory
     public function definition()
     {
         return [
-            'name' => fake()->word,
+            'name' => fake()->words,
             'sks' => rand(1, 3)
         ];
     }
