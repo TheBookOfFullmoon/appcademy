@@ -18,7 +18,7 @@ class ScheduleFactory extends Factory
     {
         return [
             'day_name' => fake()->dayOfWeek,
-            'room' => fake()->name
+            'room' => fake()->name,
         ];
     }
 }
