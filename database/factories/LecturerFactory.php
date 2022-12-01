@@ -21,7 +21,7 @@ class LecturerFactory extends Factory
             'birthday' => fake()->date(),
             'birth_place' => fake()->country(),
             'address' => fake()->address(),
-            'gender' => 'male',
+            'gender' => fake()->randomElement(['Male', 'Female']),
             'phone' => fake()->phoneNumber(),
         ];
     }
