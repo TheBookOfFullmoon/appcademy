@@ -21,6 +21,10 @@ class Lecturer extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function subjects(){
+        return $this->hasMany(Subject::class);
+    }
+
     protected function birthday(): Attribute{
         return Attribute::make(
             get: fn($value) => Carbon::createFromFormat('d/m/Y', $value)->format('d-m-Y'),
